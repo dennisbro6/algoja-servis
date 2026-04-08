@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
-import type { Stranka, Stroj, Profile, NalogFormData } from '@/types'
+import { generatePDFBase64 } from '@/lib/pdf'
+import type { Stranka, Stroj, Profile, NalogFormData, Nalog } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -107,8 +108,15 @@ export default function NovNalogPage() {
     }))
   }
 
-  function sendEmail(data: { stevilka: string; stranka_naziv: string; stranka_lokacija: string | null; datum: string; status: string; serviserji: string[]; stroj_naziv: string | null }) {
-    supabase.functions.invoke('send-email', { body: data }).catch(console.error)
+  async function sendEmail(nalog: Nalog) {
+    try {
+      const pdfBase64 = await generatePDFBase64(nalog)
+      supabase.functions.invoke('send-email', {
+        body: { stevilka: nalog.stevilka, pdfBase64 }
+      }).catch(console.error)
+    } catch (e) {
+      console.error('Email napaka:', e)
+    }
   }
 
   async function generateStevilka(): Promise<string> {
@@ -142,18 +150,16 @@ export default function NovNalogPage() {
       }
 
       if (isEdit && id) {
-        const { error } = await supabase.from('nalogi').update(payload).eq('id', id)
+        const { data: updated, error } = await supabase.from('nalogi').update(payload).eq('id', id).select().single()
         if (error) throw error
-        if (closeStatus === 'zakljucen') {
-          sendEmail({ ...payload, stevilka: id, status: 'zakljucen' })
-        }
+        if (closeStatus === 'zakljucen') sendEmail(updated)
         toast.success('Nalog posodobljen')
         navigate(`/nalogi/${id}`)
       } else {
         const stevilka = await generateStevilka()
         const { data, error } = await supabase.from('nalogi').insert({ ...payload, stevilka }).select().single()
         if (error) throw error
-        sendEmail({ ...payload, stevilka, status: closeStatus || 'odprt' })
+        sendEmail(data)
         toast.success(`Nalog ${stevilka} shranjen`)
         navigate(`/nalogi/${data.id}`)
       }

@@ -1,7 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 const TO_EMAIL = 'tomaz@tana.si'
-const FROM_EMAIL = 'Algoja Servis <servis@tana.si>'
+const FROM_EMAIL = 'Algoja Servis <servis@studio56.si>'
 
 serve(async (req) => {
   const corsHeaders = {

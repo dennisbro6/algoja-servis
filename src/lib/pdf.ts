@@ -3,19 +3,14 @@ import html2canvas from 'html2canvas-pro'
 import type { Nalog } from '@/types'
 import { formatDate } from './utils'
 
-export async function generatePDF(nalog: Nalog) {
+async function renderPDF(nalog: Nalog): Promise<jsPDF> {
   const el = document.createElement('div')
   el.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:Arial,sans-serif;'
   el.innerHTML = buildHTML(nalog)
   document.body.appendChild(el)
 
   try {
-    const canvas = await html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-    })
-
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
     const imgData = canvas.toDataURL('image/png')
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
     const W = 210
@@ -24,7 +19,6 @@ export async function generatePDF(nalog: Nalog) {
     if (H <= 297) {
       pdf.addImage(imgData, 'PNG', 0, 0, W, H)
     } else {
-      // Več strani
       const pageH = 297
       let offset = 0
       while (offset < H) {
@@ -33,11 +27,20 @@ export async function generatePDF(nalog: Nalog) {
         offset += pageH
       }
     }
-
-    pdf.save(`${nalog.stevilka}.pdf`)
+    return pdf
   } finally {
     document.body.removeChild(el)
   }
+}
+
+export async function generatePDF(nalog: Nalog) {
+  const pdf = await renderPDF(nalog)
+  pdf.save(`${nalog.stevilka}.pdf`)
+}
+
+export async function generatePDFBase64(nalog: Nalog): Promise<string> {
+  const pdf = await renderPDF(nalog)
+  return pdf.output('base64')
 }
 
 function buildHTML(nalog: Nalog): string {
