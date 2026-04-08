@@ -40,7 +40,7 @@ export async function generatePDF(nalog: Nalog) {
 
 export async function generatePDFBase64(nalog: Nalog): Promise<string> {
   const pdf = await renderPDF(nalog)
-  return pdf.output('base64')
+  return pdf.output('datauristring').split(',')[1]
 }
 
 function buildHTML(nalog: Nalog): string {
