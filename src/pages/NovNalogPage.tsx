@@ -109,14 +109,16 @@ export default function NovNalogPage() {
   }
 
   async function sendEmail(nalog: Nalog) {
+    let pdfBase64: string | undefined
     try {
-      const pdfBase64 = await generatePDFBase64(nalog)
-      supabase.functions.invoke('send-email', {
-        body: { stevilka: nalog.stevilka, pdfBase64 }
-      }).catch(console.error)
+      pdfBase64 = await generatePDFBase64(nalog)
+      console.log('PDF base64 length:', pdfBase64?.length)
     } catch (e) {
-      console.error('Email napaka:', e)
+      console.error('PDF generiranje neuspešno:', e)
     }
+    supabase.functions.invoke('send-email', {
+      body: { stevilka: nalog.stevilka, pdfBase64 }
+    }).catch(console.error)
   }
 
   async function generateStevilka(): Promise<string> {
@@ -152,15 +154,15 @@ export default function NovNalogPage() {
       if (isEdit && id) {
         const { data: updated, error } = await supabase.from('nalogi').update(payload).eq('id', id).select().single()
         if (error) throw error
-        if (closeStatus === 'zakljucen') sendEmail(updated)
         toast.success('Nalog posodobljen')
+        if (closeStatus === 'zakljucen') await sendEmail(updated)
         navigate(`/nalogi/${id}`)
       } else {
         const stevilka = await generateStevilka()
         const { data, error } = await supabase.from('nalogi').insert({ ...payload, stevilka }).select().single()
         if (error) throw error
-        sendEmail(data)
         toast.success(`Nalog ${stevilka} shranjen`)
+        await sendEmail(data)
         navigate(`/nalogi/${data.id}`)
       }
     } catch (e) {
