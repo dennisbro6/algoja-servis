@@ -107,6 +107,10 @@ export default function NovNalogPage() {
     }))
   }
 
+  function sendEmail(data: { stevilka: string; stranka_naziv: string; stranka_lokacija: string | null; datum: string; status: string; serviserji: string[]; stroj_naziv: string | null }) {
+    supabase.functions.invoke('send-email', { body: data }).catch(console.error)
+  }
+
   async function generateStevilka(): Promise<string> {
     const { data } = await supabase.rpc('generate_nalog_stevilka')
     return data as string
@@ -140,12 +144,16 @@ export default function NovNalogPage() {
       if (isEdit && id) {
         const { error } = await supabase.from('nalogi').update(payload).eq('id', id)
         if (error) throw error
+        if (closeStatus === 'zakljucen') {
+          sendEmail({ ...payload, stevilka: id, status: 'zakljucen' })
+        }
         toast.success('Nalog posodobljen')
         navigate(`/nalogi/${id}`)
       } else {
         const stevilka = await generateStevilka()
         const { data, error } = await supabase.from('nalogi').insert({ ...payload, stevilka }).select().single()
         if (error) throw error
+        sendEmail({ ...payload, stevilka, status: closeStatus || 'odprt' })
         toast.success(`Nalog ${stevilka} shranjen`)
         navigate(`/nalogi/${data.id}`)
       }
