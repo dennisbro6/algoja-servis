@@ -159,7 +159,7 @@ export default function NovNalogPage() {
   if (loading) return <div className="p-6 text-gray-400">Nalagam...</div>
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4" />
@@ -204,7 +204,7 @@ export default function NovNalogPage() {
               </Select>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="space-y-1.5 sm:col-span-1">
+              <div className="space-y-1.5">
                 <Label>Naziv *</Label>
                 <Input
                   value={form.stranka_naziv}
@@ -252,7 +252,7 @@ export default function NovNalogPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label>Naziv stroja</Label>
                 <Input
@@ -301,7 +301,7 @@ export default function NovNalogPage() {
         {/* Čas in km */}
         <section className="bg-white rounded-lg border border-gray-200 p-5">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Čas in prevoz</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label>Število ur</Label>
               <Input
@@ -365,7 +365,7 @@ export default function NovNalogPage() {
         </section>
 
         {/* Akcije */}
-        <div className="flex justify-end gap-3 pb-6">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 pb-6">
           <Button variant="outline" onClick={() => navigate(-1)}>Prekliči</Button>
           <Button variant="outline" onClick={() => save()} disabled={saving}>
             <Save className="h-4 w-4" />

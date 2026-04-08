@@ -51,7 +51,7 @@ function buildHTML(nalog: Nalog): string {
       <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1d4ed8;padding-bottom:16px;margin-bottom:20px;">
         <img src="/logo.png" alt="Algoja" style="height:48px;object-fit:contain;" onerror="this.style.display='none'" />
         <div style="text-align:center;flex:1;">
-          <div style="font-size:13px;color:#6b7280;margin-top:4px;">Servisni nalog za stroje za folijo</div>
+          <div style="font-size:13px;color:#6b7280;margin-top:4px;">Servisni nalog</div>
         </div>
         <div style="text-align:right;">
           <div style="font-size:22px;font-weight:bold;color:#1d4ed8;">${nalog.stevilka}</div>

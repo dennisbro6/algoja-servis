@@ -44,7 +44,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Servisni nalogi</h1>
@@ -60,8 +60,8 @@ export default function DashboardPage() {
       </div>
 
       {/* Filtri */}
-      <div className="flex gap-3 mb-5">
-        <div className="relative flex-1 max-w-sm">
+      <div className="flex flex-col sm:flex-row gap-3 mb-5">
+        <div className="relative flex-1 sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Išči po številki, stranki, serviserju..."
@@ -71,7 +71,7 @@ export default function DashboardPage() {
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-full sm:w-36">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
